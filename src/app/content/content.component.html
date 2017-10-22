@@ -1,11 +1,7 @@
-<div *ngFor="let photo of photos" [@photoState]="photo.state" class="content">
-    <img
-         (click)="photo.toggleState()"
-         src="{{server}}/photo/image/{{photo.id}}/1280/1024" />
+<div [@photoState]="prevState" class="content">
+    <img src="{{server}}/photo/image/{{prevId}}/1280/1024" />
 </div>
 
-<!--
-<div style="width:100px;height:50px;position:absolute;top:2000px;left:0px;">
-<button (click)="show(0)">start</button>
+<div [@photoState]="nextState" class="content">
+    <img src="{{server}}/photo/image/{{nextId}}/1280/1024" />
 </div>
--->

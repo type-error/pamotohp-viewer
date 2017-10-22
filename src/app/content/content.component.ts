@@ -29,14 +29,20 @@ export class ContentComponent implements OnInit, AfterViewInit {
   page: number = 20;
   country: string = 'Australia';
   server: string = environment.server;
+  cnt: number = 0;
+  prevState: string = '';
+  nextState: string = '';
+  prevId: string = '';
+  nextId: string = '';
 
   constructor(private photoService: PhotoService) {}
 
   ngOnInit() {
+    this.show();
   }
 
   ngAfterViewInit() {
-    this.show();
+    console.log("ngAfter"); 
   }
 
   getPhotos() {
@@ -48,6 +54,12 @@ export class ContentComponent implements OnInit, AfterViewInit {
               photos.forEach(function(value) {
                 that.photos.push(new Photo(value));
               });
+
+              if(that.cnt == 0) {
+                that.photos[that.cnt].toggleState();
+                that.prevState = that.photos[that.cnt].state;
+                that.prevId = that.photos[that.cnt].id;
+              }
             },
             error => this.errorMessage = <any>error
         );
@@ -55,18 +67,26 @@ export class ContentComponent implements OnInit, AfterViewInit {
 
   show() {
     let that = this;
-    let cnt = 0;
 
     let photos = Observable.timer(0, 5000).subscribe(res => {
       that.getPhotos();
-    });	
+    });
 
     Observable.timer(3000, 5000).subscribe(t => {
-    	this.photos[cnt++].toggleState();
+      that.photos[that.cnt].reset();
+      that.photos[that.cnt + 1].toggleState();
 
-    if(cnt > 200) {
-      photos.unsubscribe();
-    }
+      that.prevState = that.photos[that.cnt].state;
+      that.nextState = that.photos[that.cnt + 1].state;
+
+      that.prevId = that.photos[that.cnt].id;
+      that.nextId = that.photos[that.cnt + 1].id;
+
+      that.cnt++;
+
+      if(that.cnt > 100) {
+        photos.unsubscribe();
+      }
     });
   }
 }
