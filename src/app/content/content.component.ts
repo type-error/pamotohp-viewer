@@ -33,7 +33,6 @@ export class ContentComponent implements OnInit, AfterViewInit {
   constructor(private photoService: PhotoService) {}
 
   ngOnInit() {
-    this.getPhotos();
   }
 
   ngAfterViewInit() {
@@ -41,14 +40,14 @@ export class ContentComponent implements OnInit, AfterViewInit {
   }
 
   getPhotos() {
+    let that = this;
+
     this.photoService.getPhotos(this.country, this.page++)
         .subscribe(
             photos => {
-              let that = this;
-              that.photos = [];
               photos.forEach(function(value) {
                 that.photos.push(new Photo(value));
-              })
+              });
             },
             error => this.errorMessage = <any>error
         );
@@ -58,22 +57,16 @@ export class ContentComponent implements OnInit, AfterViewInit {
     let that = this;
     let cnt = 0;
 
-    Observable.timer(1000, 2000).subscribe(t => {
-      if(cnt == 5) {
-          cnt = 0;
-          /*
-          this.photos.forEach(function(value) {
-             value.reset();
-          });
-          */
-          that.getPhotos();
-      }
+    let photos = Observable.timer(0, 5000).subscribe(res => {
+      that.getPhotos();
+    });	
 
-    if(cnt > 0) {
-        this.photos[cnt-1].toggleState();
+    Observable.timer(3000, 5000).subscribe(t => {
+    	this.photos[cnt++].toggleState();
+
+    if(cnt > 200) {
+      photos.unsubscribe();
     }
-    this.photos[cnt++].toggleState();
-
     });
   }
 }
